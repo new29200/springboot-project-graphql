@@ -1,0 +1,7 @@
+services:
+  api:
+    build: .
+    container_name: springboot-graphql-api
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
