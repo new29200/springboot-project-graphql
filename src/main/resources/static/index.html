@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        .serif { font-family: 'DM Serif Display', serif; }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="border-b border-gray-100 px-8 py-4 flex items-center justify-between sticky top-0 bg-white z-10">
+        <a href="/" class="serif text-xl">Bibliothèque</a>
+        <div class="flex gap-8 text-sm text-gray-400">
+            <a href="/books.html" class="hover:text-black transition-colors">Livres</a>
+            <a href="/libraries.html" class="hover:text-black transition-colors">Bibliothèques</a>
+            <a href="/members.html" class="hover:text-black transition-colors">Membres</a>
+            <a href="/loans.html" class="hover:text-black transition-colors">Prêts</a>
+        </div>
+    </nav>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <!-- Hero -->
+        <div class="mb-14">
+            <p class="text-xs tracking-widest text-gray-400 uppercase mb-3">Catalogue</p>
+            <h1 class="serif text-5xl mb-4">Browse by Category</h1>
+            <p class="text-gray-400 text-sm">Explorez notre collection par genre littéraire</p>
+        </div>
+
+        <!-- Genres pills -->
+        <div id="genres-container" class="flex gap-3 mb-14 flex-wrap">
+            <button onclick="filterByGenre(null)"
+                class="genre-pill active border border-black bg-black text-white px-5 py-2 rounded-full text-sm transition-all">
+                Tous
+            </button>
+        </div>
+
+        <!-- Books grid par genre -->
+        <div id="books-container">
+            <div class="text-sm text-gray-300">Chargement...</div>
+        </div>
+
+    </main>
+
+    <script>
+        const GQL = 'http://localhost:8080/graphql';
+
+        async function query(q) {
+            const res = await fetch(GQL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: q })
+            });
+            const json = await res.json();
+            return json.data;
+        }
+
+        let allBooks = [];
+        let allGenres = [];
+        let activeGenre = null;
+
+        async function load() {
+            const data = await query(`query {
+                genres { genreId genre }
+                books {
+                    bookId title isbn publishDate
+                    author { firstName lastName }
+                    genre { genreId genre }
+                    edition { editionName }
+                }
+            }`);
+
+            allGenres = data.genres;
+            allBooks = data.books;
+
+            renderGenres();
+            renderBooks();
+        }
+
+        function renderGenres() {
+            const container = document.getElementById('genres-container');
+            allGenres.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'genre-pill border border-gray-200 text-gray-500 px-5 py-2 rounded-full text-sm hover:border-black hover:text-black transition-all';
+                btn.textContent = g.genre;
+                btn.onclick = () => filterByGenre(g.genreId);
+                btn.dataset.id = g.genreId;
+                container.appendChild(btn);
+            });
+        }
+
+        function filterByGenre(genreId) {
+            activeGenre = genreId;
+            document.querySelectorAll('.genre-pill').forEach(btn => {
+                const isActive = (genreId === null && !btn.dataset.id) || btn.dataset.id == genreId;
+                btn.className = isActive
+                    ? 'genre-pill border border-black bg-black text-white px-5 py-2 rounded-full text-sm transition-all'
+                    : 'genre-pill border border-gray-200 text-gray-500 px-5 py-2 rounded-full text-sm hover:border-black hover:text-black transition-all';
+            });
+            renderBooks();
+        }
+
+        function renderBooks() {
+            const container = document.getElementById('books-container');
+            container.innerHTML = '';
+
+            const genres = activeGenre
+                ? allGenres.filter(g => g.genreId == activeGenre)
+                : allGenres;
+
+            genres.forEach(genre => {
+                const books = allBooks.filter(b => b.genre.genreId == genre.genreId);
+                if (books.length === 0) return;
+
+                const section = document.createElement('div');
+                section.className = 'mb-14 fade-in';
+                section.innerHTML = `
+                    <div class="flex items-baseline justify-between mb-5">
+                        <h2 class="text-xl font-semibold">${genre.genre} <span class="text-gray-300 text-base font-normal">${books.length} livre${books.length > 1 ? 's' : ''}</span></h2>
+                        <a href="/books.html?genreId=${genre.genreId}" class="text-xs text-gray-400 hover:text-black transition-colors">Voir tout →</a>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        ${books.map(book => `
+                            <a href="/book-detail.html?id=${book.bookId}"
+                               class="group cursor-pointer">
+                                <div class="bg-gray-50 border border-gray-100 rounded-lg h-36 mb-3 flex items-center justify-center group-hover:border-black transition-all overflow-hidden">
+                                    <span class="text-4xl">📚</span>
+                                </div>
+                                <div class="text-sm font-medium leading-snug mb-1 group-hover:underline">${book.title}</div>
+                                <div class="text-xs text-gray-400">${book.author.firstName} ${book.author.lastName}</div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        load();
+    </script>
+
+</body>
+</html>

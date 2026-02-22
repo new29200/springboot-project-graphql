@@ -132,6 +132,7 @@ type Query {
     genres: [Genre]
     types: [Type]
     rangs: [Rang]
+    editions: [Edition]
 }
 
 # ─── Mutations ──────────────────────────────────────────────
@@ -161,4 +162,16 @@ type Mutation {
     createGenre(genre: String!): Genre
     createType(type: String!): Type
     createRang(rang: String!): Rang
+
+    deleteGenre(genreId: ID!): Boolean
+    updateGenre(genreId: ID!, genre: String!): Genre
+
+    deleteType(typeId: ID!): Boolean
+    updateType(typeId: ID!, type: String!): Type
+
+    deleteRang(rangId: ID!): Boolean
+    updateRang(rangId: ID!, rang: String!): Rang
+
+    deleteEdition(editionId: ID!): Boolean
+    updateEdition(editionId: ID!, editionName: String, city: String, country: String): Edition
 }
