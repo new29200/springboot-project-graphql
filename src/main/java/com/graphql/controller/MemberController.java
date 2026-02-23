@@ -1,8 +1,12 @@
 package com.graphql.controller;
 
 import com.graphql.model.Member;
+import com.graphql.model.User;
+import com.graphql.model.Rang;
 import com.graphql.repository.LibraryRepository;
 import com.graphql.repository.MemberRepository;
+import com.graphql.repository.UserRepository;
+import com.graphql.repository.RangRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -15,6 +19,8 @@ public class MemberController {
 
     private final MemberRepository memberRepository;
     private final LibraryRepository libraryRepository;
+    private final UserRepository userRepository;
+    private final RangRepository rangRepository;    
 
     @QueryMapping
     public List<Member> members() { return memberRepository.findAll(); }
@@ -30,20 +36,43 @@ public class MemberController {
     }
 
     @QueryMapping
+    public Member memberByEmail(@Argument String email) {
+        return memberRepository.findByEmail(email).orElse(null);
+    }
+
+    @QueryMapping
     public List<Member> activeMembers() { return memberRepository.findByActive(true); }
 
     @MutationMapping
     public Member createMember(@Argument String lastName, @Argument String firstName,
-                               @Argument String address, @Argument String postalCode,
-                               @Argument String city, @Argument String email,
-                               @Argument String phone, @Argument String passWord,
-                               @Argument String libraryId) {
-        return memberRepository.save(Member.builder()
+                           @Argument String address, @Argument String postalCode,
+                           @Argument String city, @Argument String email,
+                           @Argument String phone, @Argument String passWord,
+                           @Argument String libraryId) {
+
+        Member member = memberRepository.save(Member.builder()
                 .lastName(lastName).firstName(firstName).address(address)
                 .postalCode(postalCode).city(city).email(email).phone(phone)
                 .passWord(passWord).active(true)
                 .library(libraryRepository.findById(Integer.parseInt(libraryId)).orElseThrow())
                 .build());
+
+        // Création automatique du User associé
+        Rang rangMember = rangRepository.findByRang("Member")
+                .orElseThrow(() -> new RuntimeException("Rang 'Member' introuvable"));
+
+        // Vérifie que le User n'existe pas déjà (email unique)
+        if (userRepository.findByEmail(email).isEmpty()) {
+            userRepository.save(User.builder()
+                    .lastName(lastName).firstName(firstName)
+                    .address(address).postalCode(postalCode)
+                    .city(city).email(email).phone(phone)
+                    .passWord(lastName + postalCode) // ex: "Dupont75001"
+                    .rang(rangMember)
+                    .build());
+        }
+
+        return member;
     }
 
     @MutationMapping

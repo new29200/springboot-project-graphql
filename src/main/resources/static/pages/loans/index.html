@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prêts — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/loans/loans.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div id="page-header"></div>
+
+        <div id="stats" class="grid grid-cols-3 gap-4 mb-12"></div>
+
+        <!-- Tabs -->
+        <div class="flex gap-1 mb-8 border-b border-gray-100">
+            <button id="tab-active"  class="tab-btn active">Prêts actifs</button>
+            <button id="tab-history" class="tab-btn">Historique</button>
+        </div>
+
+        <div id="panel-active">
+            <table class="w-full text-sm">
+                <thead id="active-head"></thead>
+                <tbody id="active-table"></tbody>
+            </table>
+        </div>
+
+        <div id="panel-history" class="hidden">
+            <table class="w-full text-sm">
+                <thead id="history-head"></thead>
+                <tbody id="history-table"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/loans/loans.js"></script>
+
+</body>
+</html>

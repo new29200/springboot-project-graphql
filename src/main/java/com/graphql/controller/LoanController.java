@@ -45,6 +45,11 @@ public class LoanController {
     }
 
     @QueryMapping
+    public Boolean isCopyAvailable(@Argument String copyId) {
+        return loanRepository.findByCopyCopyIdAndReturnDateIsNull(Integer.parseInt(copyId)).isEmpty();
+    }
+
+    @QueryMapping
     public List<Copy> copiesByLibrary(@Argument String libraryId) {
         return copyRepository.findByLibraryLibraryId(Integer.parseInt(libraryId));
     }

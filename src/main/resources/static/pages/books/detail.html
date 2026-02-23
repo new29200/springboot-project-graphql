@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail livre — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/books/books.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-4xl mx-auto">
+
+        <a href="/pages/books/index.html"
+           class="text-sm text-gray-400 hover:text-black transition-colors mb-10 inline-block">
+            ← Retour aux livres
+        </a>
+
+        <div id="content">
+            <div class="text-sm text-gray-300 py-10 text-center">Chargement...</div>
+        </div>
+
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/books/books.js"></script>
+
+</body>
+</html>

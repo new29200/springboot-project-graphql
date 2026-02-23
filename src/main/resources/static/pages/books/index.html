@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livres — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/books/books.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div id="page-header"></div>
+
+        <!-- Filtres -->
+        <div class="flex gap-3 mb-6 flex-wrap items-center">
+            <input id="search-title" type="text" placeholder="Rechercher par titre..."
+                class="search-input border border-gray-200 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:border-black transition-colors"/>
+            <select id="filter-author"
+                class="filter-select border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-black transition-colors text-gray-500">
+                <option value="">Tous les auteurs</option>
+            </select>
+            <select id="filter-genre"
+                class="filter-select border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-black transition-colors text-gray-500">
+                <option value="">Tous les genres</option>
+            </select>
+            <button onclick="applyFilters()"
+                class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                Rechercher
+            </button>
+            <button onclick="resetFilters()"
+                class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors text-gray-500">
+                Réinitialiser
+            </button>
+        </div>
+
+        <div id="count" class="text-xs text-gray-400 mb-5"></div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead id="table-head"></thead>
+                <tbody id="books-table"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/books/books.js"></script>
+
+</body>
+</html>

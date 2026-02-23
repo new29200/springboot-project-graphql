@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membres — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/members/members.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div class="flex items-end justify-between mb-10">
+            <div id="page-header"></div>
+            <div class="flex gap-3">
+                <button id="btn-all" onclick="showAll()">Tous</button>
+                <button id="btn-active" onclick="showActive()">Actifs seulement</button>
+                <button id="btn-add" onclick="openModal()" class="hidden bg-black text-white px-4 py-2 rounded-full text-sm">
+                    + Ajouter un membre
+                </button>
+            </div>
+        </div>
+
+        <div id="count" class="text-xs text-gray-400 mb-5"></div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead id="table-head"></thead>
+                <tbody id="members-table"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-lg shadow-xl">
+            <h2 class="text-lg font-semibold mb-6">Nouveau membre</h2>
+            <form id="add-form" onsubmit="submitMember(event)" class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input name="lastName"   placeholder="Nom"        required class="border rounded-lg px-3 py-2 text-sm">
+                    <input name="firstName"  placeholder="Prénom"     required class="border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <input name="address"    placeholder="Adresse"        required class="border rounded-lg px-3 py-2 text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input name="postalCode" placeholder="Code postal" required class="border rounded-lg px-3 py-2 text-sm">
+                    <input name="city"       placeholder="Ville"       required class="border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <input name="email" type="email" placeholder="Email"  required class="border rounded-lg px-3 py-2 text-sm">
+                <input name="phone"      placeholder="Téléphone"      required class="border rounded-lg px-3 py-2 text-sm">
+                <select id="field-library" name="libraryId" required class="border rounded-lg px-3 py-2 text-sm">
+                    <option value="">Choisir une bibliothèque...</option>
+                </select>
+                <p class="text-xs text-gray-400">
+                    Le mot de passe sera généré automatiquement : <strong>Nom + Code postal</strong>
+                </p>
+                <p id="form-error" class="text-red-500 text-xs"></p>
+                <div class="flex gap-3 justify-end mt-2">
+                    <button type="button" onclick="closeModal()" class="text-sm text-gray-500 hover:text-black">Annuler</button>
+                    <button type="submit" class="bg-black text-white px-5 py-2 rounded-full text-sm">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/members/members.js"></script>
+
+</body>
+</html>
