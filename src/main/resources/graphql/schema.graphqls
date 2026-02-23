@@ -128,7 +128,7 @@ type Query {
 
     loans: [Loan]
     loan(loanId: ID!): Loan
-    loansByMember(memberId: ID!): [Loan]
+    loansByMember(email: String!): [Loan]
     activeLoans: [Loan]
 
     users: [User]

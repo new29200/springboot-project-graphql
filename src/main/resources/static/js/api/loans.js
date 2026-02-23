@@ -13,8 +13,8 @@ export const LoansAPI = {
         }
     }`),
 
-    getByMember: (memberId) => gql(`query {
-        loansByMember(memberId: "${memberId}") {
+    getByMember: (email) => gql(`query {
+        loansByMember(email: "${email}") {
             loanId loanDate dueDate returnDate
             copy {
                 book { title }
@@ -22,7 +22,7 @@ export const LoansAPI = {
             }
         }
     }`),
-
+    
     create: (copyId, memberId, loanDate, dueDate) => gql(`mutation {
         createLoan(copyId: "${copyId}", memberId: "${memberId}", loanDate: "${loanDate}", dueDate: "${dueDate}") {
             loanId loanDate dueDate

@@ -14,18 +14,19 @@ function isOverdue(dueDate) { return new Date(dueDate) < new Date(); }
 async function load() {
     const user     = Auth.getUser();
     const memberId = user?.userId;
+    const memberEmail = user?.email;
 
     if (!memberId) {
         window.location.href = '/pages/login/index.html';
         return;
     }
 
-    const data   = await LoansAPI.getByMember(memberId);
+    const data   = await LoansAPI.getByMember(memberEmail);
     const loans  = data?.loansByMember || [];
-
+    
     const active   = loans.filter(l => !l.returnDate);
     const returned = loans.filter(l =>  l.returnDate);
-
+    
     document.getElementById('stats').innerHTML =
         renderStatCard('En cours',  active.length)   +
         renderStatCard('Retournés', returned.length) +

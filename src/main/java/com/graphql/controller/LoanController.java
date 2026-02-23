@@ -27,8 +27,10 @@ public class LoanController {
     }
 
     @QueryMapping
-    public List<Loan> loansByMember(@Argument String memberId) {
-        return loanRepository.findByMemberMemberId(Integer.valueOf(memberId));
+    public List<Loan> loansByMember(@Argument String email) {
+        return memberRepository.findByEmail(email)
+            .map(member -> loanRepository.findByMemberMemberId(member.getMemberId()))
+            .orElse(List.of());
     }
 
     @QueryMapping
