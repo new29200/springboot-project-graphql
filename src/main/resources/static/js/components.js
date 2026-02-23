@@ -50,7 +50,7 @@ function renderNavbar(activePage = '') {
 
     // Lien "Mes prêts" pour tous les connectés
     if (user && !isStaff) {
-        links.push({ href: '/pages/loans/index.html', label: 'Mes prêts', key: 'loans' });
+        links.push({ href: '/pages/loans/my-loans/index.html', label: 'Mes prêts', key: 'loans' });
     }
 
     const userBlock = user ? `

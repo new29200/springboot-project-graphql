@@ -3,6 +3,7 @@ import { BooksAPI } from '/js/api/books.js';
 import { AuthorsAPI } from '/js/api/authors.js';
 import { GenresAPI, EditionsAPI, TypesAPI } from '/js/api/catalog.js';
 import { LibrariesAPI } from '/js/api/libraries.js';
+import { CopiesAPI } from '../../js/api/copies.js';
 
 if (PAGE === 'list') {
     initPage('books');
@@ -140,7 +141,7 @@ if (PAGE === 'list') {
         showToast('Livre créé avec succès');
         closeModal('modal-create-book');
 
-        const data = await BooksAPI.books();
+        const data = await BooksAPI.getAll();
         allBooks = data.books;
         applyFilters();
     }
@@ -209,8 +210,8 @@ if (PAGE === 'detail') {
 
         // Deux queries séparées pour éviter les nulls
         const [bookData, copiesData] = await Promise.all([
-            BooksAPI.books(),         // on prend depuis la liste complète
-            BooksAPI.copiesByBook(id)
+            BooksAPI.getAll(),         // on prend depuis la liste complète
+            CopiesAPI.getByBook(id)
         ]);
 
         const book   = bookData.books?.find(b => b.bookId == id);

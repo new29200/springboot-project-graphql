@@ -1,4 +1,4 @@
-// login.js — Logique page Login
+import { AuthAPI } from '/js/api/auth.js';
 
 // Fonts manuellement car pas d'initPage ici
 const link = document.createElement('link');
@@ -10,7 +10,6 @@ const style = document.createElement('style');
 style.textContent = `body { font-family: 'DM Sans', sans-serif; } .serif { font-family: 'DM Serif Display', serif; }`;
 document.head.appendChild(style);
 
-// Si déjà connecté, rediriger
 if (Auth.isLoggedIn()) {
     window.location.href = '/index.html';
 }
@@ -27,17 +26,12 @@ async function doLogin() {
     btn.disabled = true;
     errorMsg.classList.add('hidden');
 
-    const data = await API.login(email, password);
+    const data = await AuthAPI.login(email, password);
     const user = data?.login;
 
     if (user) {
         Auth.setUser(user);
-        // Rediriger selon le rang
-        if (Auth.isStaff()) {
-            window.location.href = '/pages/loans/index.html';
-        } else {
-            window.location.href = '/index.html';
-        }
+        window.location.href = Auth.isStaff() ? '/pages/loans/index.html' : '/index.html';
     } else {
         errorMsg.classList.remove('hidden');
         btn.textContent = 'Se connecter';
@@ -50,7 +44,9 @@ function fillDemo(email, password) {
     document.getElementById('password').value = password;
 }
 
-// Enter pour soumettre
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter') doLogin();
 });
+
+window.doLogin   = doLogin;
+window.fillDemo  = fillDemo;

@@ -5,6 +5,12 @@ initPage('libraries');
 
 document.getElementById('page-header').innerHTML = renderPageHeader('Réseau', 'Bibliothèques');
 
+const isStaff = Auth.isStaff();
+
+if (isStaff) {
+    document.getElementById('staff-actions').classList.remove('hidden');
+}
+
 async function load() {
     const [libData, copyData] = await Promise.all([
         LibrariesAPI.getAll(),
@@ -52,5 +58,25 @@ async function load() {
         grid.appendChild(card);
     });
 }
+
+async function createLibrary() {
+    const libraryName = document.getElementById('l-libraryName').value.trim();
+    const createDate  = document.getElementById('l-createDate').value;
+    const location    = document.getElementById('l-location').value.trim();
+    const city        = document.getElementById('l-city').value.trim();
+    const nature      = document.getElementById('l-nature').value.trim();
+
+    if (!libraryName || !createDate || !location || !city || !nature) {
+        showToast('Veuillez remplir tous les champs', 'error');
+        return;
+    }
+
+    await LibrariesAPI.create(libraryName, createDate, location, city, nature);
+    showToast('Bibliothèque créée');
+    closeModal('modal-create');
+    load();
+}
+
+window.createLibrary = createLibrary;
 
 load();

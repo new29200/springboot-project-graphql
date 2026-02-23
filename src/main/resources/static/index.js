@@ -1,4 +1,6 @@
-// index.js — Page d'accueil
+import { BooksAPI } from '/js/api/books.js';
+import { GenresAPI } from '/js/api/catalog.js';
+
 initPage('');
 
 let allBooks  = [];
@@ -6,8 +8,8 @@ let allGenres = [];
 
 async function load() {
     const [genreData, bookData] = await Promise.all([
-        API.genres(),
-        API.books()
+        GenresAPI.getAll(),
+        BooksAPI.getAll()
     ]);
 
     allGenres = genreData.genres;
