@@ -1,51 +1,58 @@
-// books.js — Logique pages Livres
-// Gère à la fois books/index.html et books/detail.html
-
 const PAGE = window.location.pathname.includes('detail') ? 'detail' : 'list';
+import { BooksAPI } from '/js/api/books.js';
+import { AuthorsAPI } from '/js/api/authors.js';
+import { GenresAPI, EditionsAPI, TypesAPI } from '/js/api/catalog.js';
+import { LibrariesAPI } from '/js/api/libraries.js';
 
-// ============================================================
-// PAGE LISTE
-// ============================================================
 if (PAGE === 'list') {
     initPage('books');
+
+    const isStaff = Auth.isStaff();
+
     document.getElementById('page-header').innerHTML = renderPageHeader('Catalogue', 'Livres');
     document.getElementById('table-head').innerHTML  = renderTableHead(['Titre', 'Auteur', 'Genre', 'Édition', 'ISBN', '']);
+
+    if (isStaff) {
+        document.getElementById('staff-actions').classList.remove('hidden');
+    }
 
     let allBooks = [];
 
     async function load() {
-        const [bookData, authorData, genreData] = await Promise.all([
-            API.books(),
-            API.authors(),
-            API.genres()
+        const [bookData, authorData, genreData, editionData, typeData, libData] = await Promise.all([
+            BooksAPI.getAll(), AuthorsAPI.getAll(), GenresAPI.getAll(), EditionsAPI.getAll(), TypesAPI.getAll(), LibrariesAPI.getAll()
         ]);
 
         allBooks = bookData.books;
 
-        // Populate auteurs
-        const authorSelect = document.getElementById('filter-author');
-        authorData.authors.forEach(a => {
-            const opt = document.createElement('option');
-            opt.value = a.authorId;
-            opt.textContent = `${a.firstName} ${a.lastName}`;
-            authorSelect.appendChild(opt);
-        });
+        populateSelect('filter-author', authorData.authors,   a => a.authorId,  a => `${a.firstName} ${a.lastName}`);
+        populateSelect('filter-genre',  genreData.genres,     g => g.genreId,   g => g.genre);
 
-        // Populate genres
-        const genreSelect = document.getElementById('filter-genre');
-        genreData.genres.forEach(g => {
-            const opt = document.createElement('option');
-            opt.value = g.genreId;
-            opt.textContent = g.genre;
-            genreSelect.appendChild(opt);
-        });
+        if (isStaff) {
+            populateSelect('b-authorId',     authorData.authors,   a => a.authorId,  a => `${a.firstName} ${a.lastName}`);
+            populateSelect('b-editionId',    editionData.editions, e => e.editionId, e => e.editionName);
+            populateSelect('b-genreId',      genreData.genres,     g => g.genreId,   g => g.genre);
+            populateSelect('b-typeId',       typeData.types,       t => t.typeId,    t => t.type);
+            populateSelect('copy-libraryId', libData.libraries,    l => l.libraryId, l => l.libraryName);
+            document.getElementById('copy-acquisitionDate').value = new Date().toISOString().split('T')[0];
+        }
 
-        // Lire params URL (venant de l'accueil par exemple)
         const params = new URLSearchParams(window.location.search);
-        if (params.get('genreId')) genreSelect.value = params.get('genreId');
-        if (params.get('authorId')) authorSelect.value = params.get('authorId');
+        if (params.get('genreId'))  document.getElementById('filter-genre').value  = params.get('genreId');
+        if (params.get('authorId')) document.getElementById('filter-author').value = params.get('authorId');
 
         applyFilters();
+    }
+
+    function populateSelect(id, items, valFn, labelFn) {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        items.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = valFn(item);
+            opt.textContent = labelFn(item);
+            sel.appendChild(opt);
+        });
     }
 
     function applyFilters() {
@@ -62,9 +69,9 @@ if (PAGE === 'list') {
     }
 
     function resetFilters() {
-        document.getElementById('search-title').value   = '';
-        document.getElementById('filter-author').value  = '';
-        document.getElementById('filter-genre').value   = '';
+        document.getElementById('search-title').value  = '';
+        document.getElementById('filter-author').value = '';
+        document.getElementById('filter-genre').value  = '';
         renderBooks(allBooks);
     }
 
@@ -79,23 +86,105 @@ if (PAGE === 'list') {
             return;
         }
 
-        tbody.innerHTML = books.map(book => renderTableRow([
-            { content: book.title, class: 'py-3 pr-6 font-medium' },
-            { content: `${book.author.firstName} ${book.author.lastName}` },
-            { content: book.genre.genre },
-            { content: book.edition.editionName },
-            { content: book.isbn, class: 'py-3 pr-6 text-gray-300 font-mono text-xs' },
-            {
-                content: `<a href="/pages/books/detail.html?id=${book.bookId}"
-                             class="text-xs border border-gray-200 px-3 py-1.5 rounded-lg hover:border-black transition-colors">
-                              Détail →
-                          </a>`,
-                class: 'py-3'
-            }
-        ])).join('');
+        tbody.innerHTML = books.map(book => {
+            const actions = isStaff ? `
+                <div class="flex gap-2">
+                    <a href="/pages/books/detail.html?id=${book.bookId}"
+                       class="text-xs border border-gray-200 px-3 py-1.5 rounded-lg hover:border-black transition-colors">
+                        Détail
+                    </a>
+                    <button onclick="openAddCopy('${book.bookId}', this)"
+                        data-title="${book.title.replace(/"/g, '&quot;')}"
+                        class="text-xs border border-gray-200 px-3 py-1.5 rounded-lg hover:border-black transition-colors whitespace-nowrap">
+                        + Exemplaire
+                    </button>
+                    <button onclick="doDeleteBook('${book.bookId}')"
+                        class="text-xs border border-red-100 text-red-400 px-3 py-1.5 rounded-lg hover:border-red-400 transition-colors">
+                        Supprimer
+                    </button>
+                </div>
+            ` : `
+                <a href="/pages/books/detail.html?id=${book.bookId}"
+                   class="text-xs border border-gray-200 px-3 py-1.5 rounded-lg hover:border-black transition-colors">
+                    Détail →
+                </a>
+            `;
+
+            return renderTableRow([
+                { content: book.title, class: 'py-3 pr-6 font-medium' },
+                { content: `${book.author.firstName} ${book.author.lastName}` },
+                { content: book.genre.genre },
+                { content: book.edition.editionName },
+                { content: book.isbn, class: 'py-3 pr-6 text-gray-300 font-mono text-xs' },
+                { content: actions, class: 'py-3' }
+            ]);
+        }).join('');
     }
 
-    // Enter pour rechercher
+    // ── Créer livre ──────────────────────────────────────────
+    async function createBook() {
+        const title       = document.getElementById('b-title').value.trim();
+        const isbn        = document.getElementById('b-isbn').value.trim();
+        const publishDate = document.getElementById('b-publishDate').value;
+        const authorId    = document.getElementById('b-authorId').value;
+        const editionId   = document.getElementById('b-editionId').value;
+        const genreId     = document.getElementById('b-genreId').value;
+        const typeId      = document.getElementById('b-typeId').value;
+
+        if (!title || !isbn || !publishDate) {
+            showToast('Veuillez remplir tous les champs', 'error');
+            return;
+        }
+
+        await BooksAPI.createBook(isbn, title, publishDate, authorId, editionId, genreId, typeId);
+        showToast('Livre créé avec succès');
+        closeModal('modal-create-book');
+
+        const data = await BooksAPI.books();
+        allBooks = data.books;
+        applyFilters();
+    }
+
+    // ── Supprimer livre — nom global pour le onclick HTML ────
+    async function doDeleteBook(bookId) {
+        if (!window.confirm('Supprimer ce livre ?')) return;
+        await BooksAPI.deleteBook(bookId);
+        showToast('Livre supprimé');
+        allBooks = allBooks.filter(b => b.bookId != bookId);
+        applyFilters();
+    }
+
+    // ── Ajouter exemplaire ───────────────────────────────────
+    function openAddCopy(bookId, btn) {
+        const title = btn.dataset.title;
+        document.getElementById('copy-bookId').value          = bookId;
+        document.getElementById('copy-book-title').textContent = title;
+        openModal('modal-add-copy');
+    }
+
+    async function addCopy() {
+        const bookId          = document.getElementById('copy-bookId').value;
+        const libraryId       = document.getElementById('copy-libraryId').value;
+        const acquisitionDate = document.getElementById('copy-acquisitionDate').value;
+
+        if (!libraryId || !acquisitionDate) {
+            showToast('Veuillez remplir tous les champs', 'error');
+            return;
+        }
+
+        await BooksAPI.createCopy(bookId, libraryId, acquisitionDate);
+        showToast('Exemplaire ajouté');
+        closeModal('modal-add-copy');
+    }
+
+    // Exposer au HTML
+    window.createBook   = createBook;
+    window.doDeleteBook = doDeleteBook;
+    window.openAddCopy  = openAddCopy;
+    window.addCopy      = addCopy;
+    window.applyFilters = applyFilters;
+    window.resetFilters = resetFilters;
+
     document.getElementById('search-title').addEventListener('keydown', e => {
         if (e.key === 'Enter') applyFilters();
     });
@@ -118,9 +207,14 @@ if (PAGE === 'detail') {
             return;
         }
 
-        const data = await API.book(id);
-        const book   = data.book;
-        const copies = data.copiesByBook;
+        // Deux queries séparées pour éviter les nulls
+        const [bookData, copiesData] = await Promise.all([
+            BooksAPI.books(),         // on prend depuis la liste complète
+            BooksAPI.copiesByBook(id)
+        ]);
+
+        const book   = bookData.books?.find(b => b.bookId == id);
+        const copies = copiesData.copiesByBook || [];
 
         if (!book) {
             document.getElementById('content').innerHTML = renderEmpty('Livre introuvable.');
@@ -130,11 +224,9 @@ if (PAGE === 'detail') {
         document.title = `${book.title} — Bibliothèque`;
 
         document.getElementById('content').innerHTML = `
-
-            <!-- Header -->
             <div class="flex gap-10 mb-12">
                 <div class="book-cover bg-gray-50 border border-gray-100 rounded-xl w-36 h-52 flex items-center justify-center flex-shrink-0">
-                    <span class="text-5xl"></span>
+                    <span class="text-5xl">📚</span>
                 </div>
                 <div class="flex flex-col justify-center gap-1">
                     <span class="text-xs tracking-widest text-gray-400 uppercase">${book.genre.genre}</span>
@@ -145,32 +237,19 @@ if (PAGE === 'detail') {
                 </div>
             </div>
 
-            <!-- Info cards -->
             <div class="grid grid-cols-3 gap-4 mb-12">
-                ${renderInfoCard(
-                    'Auteur',
-                    `${book.author.firstName} ${book.author.lastName}`,
-                    book.author.country || '—',
-                    book.author.birthDate ? `Né le ${book.author.birthDate}` : ''
-                )}
-                ${renderInfoCard(
-                    'Édition',
-                    book.edition.editionName,
-                    `${book.edition.city}, ${book.edition.country}`
-                )}
+                ${renderInfoCard('Auteur', `${book.author.firstName} ${book.author.lastName}`, book.author.country || '—')}
+                ${renderInfoCard('Édition', book.edition.editionName, `${book.edition.city}, ${book.edition.country}`)}
                 ${renderInfoCard('Type', book.type.type, book.genre.genre)}
             </div>
 
-            <!-- Disponibilité -->
             <div>
                 <h2 class="text-lg font-semibold mb-1">Disponibilité</h2>
-                <p class="text-sm text-gray-400 mb-5">
-                    ${copies.length} exemplaire${copies.length > 1 ? 's' : ''} dans le réseau
-                </p>
+                <p class="text-sm text-gray-400 mb-5">${copies.length} exemplaire${copies.length > 1 ? 's' : ''} dans le réseau</p>
                 ${copies.length === 0
                     ? renderEmpty('Aucun exemplaire disponible.')
                     : copies.map(copy => `
-                        <div class="copy-card flex items-center justify-between border border-gray-100 rounded-xl px-5 py-4 mb-2 hover:border-black transition-all">
+                        <div class="flex items-center justify-between border border-gray-100 rounded-xl px-5 py-4 mb-2 hover:border-black transition-all">
                             <div>
                                 <div class="font-medium text-sm">${copy.library.libraryName}</div>
                                 <div class="text-xs text-gray-400 mt-0.5">${copy.library.location}, ${copy.library.city}</div>

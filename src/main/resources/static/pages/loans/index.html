@@ -13,7 +13,13 @@
 
     <main class="px-8 py-12 max-w-7xl mx-auto">
 
-        <div id="page-header"></div>
+        <div class="flex items-end justify-between mb-10">
+            <div id="page-header"></div>
+            <button onclick="openModal('modal-create')"
+                class="bg-black text-white px-4 py-2 text-sm rounded-lg hover:bg-gray-800 transition-colors">
+                + Nouveau prêt
+            </button>
+        </div>
 
         <div id="stats" class="grid grid-cols-3 gap-4 mb-12"></div>
 
@@ -39,10 +45,73 @@
 
     </main>
 
-    <script src="/js/api.js"></script>
+    <!-- Modal nouveau prêt -->
+    <div id="modal-create" class="hidden fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl">
+            <h2 class="serif text-2xl mb-6">Nouveau prêt</h2>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="field-label">Membre</label>
+                    <select id="loan-memberId" class="field-input"></select>
+                </div>
+                <div>
+                    <label class="field-label">Livre</label>
+                    <select id="loan-bookId" class="field-input" onchange="loadCopies()"></select>
+                </div>
+                <div>
+                    <label class="field-label">Exemplaire (bibliothèque)</label>
+                    <select id="loan-copyId" class="field-input"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">Date de prêt</label>
+                        <input id="loan-loanDate" type="date" class="field-input"/>
+                    </div>
+                    <div>
+                        <label class="field-label">Date de retour prévue</label>
+                        <input id="loan-dueDate" type="date" class="field-input"/>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal('modal-create')"
+                    class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors">
+                    Annuler
+                </button>
+                <button onclick="createLoan()"
+                    class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                    Créer le prêt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal retour -->
+    <div id="modal-return" class="hidden fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
+            <h2 class="serif text-2xl mb-2">Enregistrer le retour</h2>
+            <p id="return-info" class="text-sm text-gray-400 mb-6"></p>
+            <input id="return-loanId" type="hidden"/>
+            <div class="mb-6">
+                <label class="field-label">Date de retour</label>
+                <input id="return-date" type="date" class="field-input"/>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal('modal-return')"
+                    class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors">
+                    Annuler
+                </button>
+                <button onclick="confirmReturn()"
+                    class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                    Confirmer le retour
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/auth.js"></script>
     <script src="/js/components.js"></script>
-    <script src="/pages/loans/loans.js"></script>
+    <script src="/pages/loans/loans.js" type="module"></script>
 
 </body>
 </html>

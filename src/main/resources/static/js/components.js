@@ -223,3 +223,10 @@ function setPillActive(containerId, activeId) {
             : 'pill border border-gray-200 text-gray-500 px-5 py-2 rounded-full text-sm hover:border-black hover:text-black transition-all';
     });
 }
+
+function openModal(id) {
+    document.getElementById(id)?.classList.remove('hidden');
+}
+function closeModal(id) {
+    document.getElementById(id)?.classList.add('hidden');
+}
