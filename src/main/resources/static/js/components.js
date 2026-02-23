@@ -48,9 +48,10 @@ function renderNavbar(activePage = '') {
         );
     }
 
-    // Lien "Mes prêts" pour tous les connectés
+    // Lien pour tous les connectés
     if (user && !isStaff) {
         links.push({ href: '/pages/loans/my-loans/index.html', label: 'Mes prêts', key: 'loans' });
+        links.push({ href: '/pages/libraries/index.html', label: 'Bibliothèques', key: 'libraries' });
     }
 
     const userBlock = user ? `
