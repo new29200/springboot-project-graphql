@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/login/login.css">
+</head>
+<body class="bg-white text-black min-h-screen flex items-center justify-center">
+
+    <div class="login-card w-full max-w-sm px-8 py-10 border border-gray-100 rounded-2xl">
+
+        <div class="mb-10 text-center">
+            <a href="/index.html" class="serif text-2xl">Bibliothèque</a>
+            <p class="text-sm text-gray-400 mt-2">Connectez-vous pour continuer</p>
+        </div>
+
+        <div id="error-msg" class="hidden mb-5 text-sm text-red-500 text-center bg-red-50 rounded-lg px-4 py-3">
+            Email ou mot de passe incorrect.
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs text-gray-400 uppercase tracking-widest mb-1.5 block">Email</label>
+                <input id="email" type="email" placeholder="votre@email.fr"
+                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-black transition-colors"/>
+            </div>
+            <div>
+                <label class="text-xs text-gray-400 uppercase tracking-widest mb-1.5 block">Mot de passe</label>
+                <input id="password" type="password" placeholder="••••••••"
+                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-black transition-colors"/>
+            </div>
+
+            <button id="login-btn" onclick="doLogin()"
+                class="w-full bg-black text-white py-2.5 rounded-lg text-sm hover:bg-gray-800 transition-colors mt-2">
+                Se connecter
+            </button>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-100">
+            <p class="text-xs text-gray-400 mb-3 text-center">Comptes de test</p>
+            <div class="space-y-2">
+                <button onclick="fillDemo('member@member.fr', 'monmotdepasse123')"
+                    class="w-full text-left text-xs border border-gray-100 rounded-lg px-3 py-2 hover:border-black transition-colors">
+                    <span class="font-medium">Membre</span>
+                    <span class="text-gray-400 ml-2">member@member.fr</span>
+                </button>
+                <button onclick="fillDemo('lara.craft@email.com', 'motdepasse123')"
+                    class="w-full text-left text-xs border border-gray-100 rounded-lg px-3 py-2 hover:border-black transition-colors">
+                    <span class="font-medium">Bibliothécaire</span>
+                    <span class="text-gray-400 ml-2">lara.craft@email.com</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script type="module" src="/pages/login/login.js"></script>
+
+</body>
+</html>

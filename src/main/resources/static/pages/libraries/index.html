@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèques</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/libraries/libraries.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div id="page-header"></div>
+
+        <div id="count" class="text-xs text-gray-400 mb-8"></div>
+
+        <div id="libraries-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="text-sm text-gray-300 py-10 text-center">Chargement...</div>
+        </div>
+
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/libraries/libraries.js" type="module"></script>
+
+</body>
+</html>

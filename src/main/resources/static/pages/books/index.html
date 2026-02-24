@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livres — Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/pages/books/books.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div class="flex items-end justify-between mb-10">
+            <div id="page-header"></div>
+            <div id="staff-actions" class="hidden">
+                <button onclick="openModal('modal-create-book')"
+                    class="bg-black text-white px-4 py-2 text-sm rounded-lg hover:bg-gray-800 transition-colors">
+                    + Nouveau livre
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="flex gap-3 mb-6 flex-wrap items-center">
+            <input id="search-title" type="text" placeholder="Rechercher par titre..."
+                class="search-input border border-gray-200 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:border-black transition-colors"/>
+            <select id="filter-author"
+                class="filter-select border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-black transition-colors text-gray-500">
+                <option value="">Tous les auteurs</option>
+            </select>
+            <select id="filter-genre"
+                class="filter-select border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-black transition-colors text-gray-500">
+                <option value="">Tous les genres</option>
+            </select>
+            <button onclick="applyFilters()"
+                class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                Rechercher
+            </button>
+            <button onclick="resetFilters()"
+                class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors text-gray-500">
+                Réinitialiser
+            </button>
+        </div>
+
+        <div id="count" class="text-xs text-gray-400 mb-5"></div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead id="table-head"></thead>
+                <tbody id="books-table"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- Modal création livre -->
+    <div id="modal-create-book" class="hidden fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-lg shadow-xl">
+            <h2 class="serif text-2xl mb-6">Nouveau livre</h2>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="col-span-2">
+                    <label class="field-label">Titre</label>
+                    <input id="b-title" type="text" class="field-input"/>
+                </div>
+                <div>
+                    <label class="field-label">ISBN</label>
+                    <input id="b-isbn" type="text" class="field-input"/>
+                </div>
+                <div>
+                    <label class="field-label">Date de publication</label>
+                    <input id="b-publishDate" type="date" class="field-input"/>
+                </div>
+                <div>
+                    <label class="field-label">Auteur</label>
+                    <select id="b-authorId" class="field-input"></select>
+                </div>
+                <div>
+                    <label class="field-label">Édition</label>
+                    <select id="b-editionId" class="field-input"></select>
+                </div>
+                <div>
+                    <label class="field-label">Genre</label>
+                    <select id="b-genreId" class="field-input"></select>
+                </div>
+                <div>
+                    <label class="field-label">Type</label>
+                    <select id="b-typeId" class="field-input"></select>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal('modal-create-book')"
+                    class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors">
+                    Annuler
+                </button>
+                <button onclick="createBook()"
+                    class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                    Créer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ajout copie -->
+    <div id="modal-add-copy" class="hidden fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
+            <h2 class="serif text-2xl mb-2">Ajouter un exemplaire</h2>
+            <p id="copy-book-title" class="text-sm text-gray-400 mb-6"></p>
+            <input id="copy-bookId" type="hidden"/>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="field-label">Bibliothèque</label>
+                    <select id="copy-libraryId" class="field-input"></select>
+                </div>
+                <div>
+                    <label class="field-label">Date d'acquisition</label>
+                    <input id="copy-acquisitionDate" type="date" class="field-input"/>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal('modal-add-copy')"
+                    class="border border-gray-200 px-5 py-2 rounded-lg text-sm hover:border-black transition-colors">
+                    Annuler
+                </button>
+                <button onclick="addCopy()"
+                    class="bg-black text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                    Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/pages/books/books.js" type="module"></script>
+
+</body>
+</html>

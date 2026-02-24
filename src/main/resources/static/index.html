@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-white text-black min-h-screen">
+
+    <div id="navbar"></div>
+
+    <main class="px-8 py-12 max-w-7xl mx-auto">
+
+        <div class="mb-14">
+            <p class="text-xs tracking-widest text-gray-400 uppercase mb-3">Catalogue</p>
+            <h1 class="serif text-5xl mb-4">Parcourez par catégories</h1>
+            <p class="text-gray-400 text-sm">Explorez notre collection par genre littéraire</p>
+        </div>
+
+        <div id="genres-pills" class="flex gap-3 mb-14 flex-wrap"></div>
+
+        <div id="books-container">
+            <div class="text-sm text-gray-300 py-10 text-center">Chargement...</div>
+        </div>
+
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script type="module" src="/index.js"></script>
+
+</body>
+</html>

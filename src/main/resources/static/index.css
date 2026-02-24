@@ -1,0 +1,11 @@
+.book-card {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-2px);
+}
+
+.book-cover {
+    background: linear-gradient(135deg, #f9f9f9 0%, #f1f1f1 100%);
+}

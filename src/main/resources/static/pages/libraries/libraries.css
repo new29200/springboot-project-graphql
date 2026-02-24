@@ -1,0 +1,18 @@
+/* libraries.css — Styles page Bibliothèques */
+
+.library-card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+
+.library-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.copy-count {
+    transition: border-color 0.2s;
+}
+
+.library-card:hover .copy-count {
+    border-color: #d1d5db;
+}

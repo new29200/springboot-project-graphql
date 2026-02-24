@@ -80,8 +80,11 @@ type User {
     userId: ID!
     lastName: String!
     firstName: String!
-    email: String!
+    address: String!
+    postalCode: String!
     city: String!
+    email: String!
+    phone: String!
     rang: Rang!
 }
 
@@ -114,24 +117,28 @@ type Query {
 
     members: [Member]
     member(memberId: ID!): Member
+    memberByEmail(email: String!): Member
     membersByLibrary(libraryId: ID!): [Member]
     activeMembers: [Member]
 
     copies: [Copy]
     copiesByBook(bookId: ID!): [Copy]
     copiesByLibrary(libraryId: ID!): [Copy]
+    isCopyAvailable(copyId: ID!): Boolean
 
     loans: [Loan]
     loan(loanId: ID!): Loan
-    loansByMember(memberId: ID!): [Loan]
+    loansByMember(email: String!): [Loan]
     activeLoans: [Loan]
 
     users: [User]
     user(userId: ID!): User
+    userByEmail(email: String!): User
 
     genres: [Genre]
     types: [Type]
     rangs: [Rang]
+    editions: [Edition]
 }
 
 # ─── Mutations ──────────────────────────────────────────────
@@ -161,4 +168,22 @@ type Mutation {
     createGenre(genre: String!): Genre
     createType(type: String!): Type
     createRang(rang: String!): Rang
+
+    deleteGenre(genreId: ID!): Boolean
+    updateGenre(genreId: ID!, genre: String!): Genre
+
+    deleteType(typeId: ID!): Boolean
+    updateType(typeId: ID!, type: String!): Type
+
+    deleteRang(rangId: ID!): Boolean
+    updateRang(rangId: ID!, rang: String!): Rang
+
+    deleteEdition(editionId: ID!): Boolean
+    updateEdition(editionId: ID!, editionName: String, city: String, country: String): Edition
+
+
+    createUser(lastName: String!, firstName: String!, address: String!, postalCode: String!, city: String!, email: String!, phone: String!, passWord: String!, rangId: ID!): User
+    updateUser(userId: ID!, lastName: String, firstName: String, email: String, city: String): User
+    deleteUser(userId: ID!): Boolean
+    login(email: String!, passWord: String!): User
 }
